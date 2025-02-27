@@ -52,11 +52,11 @@ class _HomeState extends State<Home> {
           padding: EdgeInsets.all(10),
           sliver: SliverGrid(
             delegate: SliverChildListDelegate([
-              _buildImageButton('assets/image1.png'),
-              _buildImageButton('assets/image2.png'),
-              _buildImageButton('assets/image3.png'),
-              _buildImageButton('assets/image4.png'),
-              _buildImageButton('assets/image5.png'),
+              _buildImageButton(''),
+              _buildImageButton(''),
+              _buildImageButton(''),
+              _buildImageButton(''),
+              _buildImageButton(''),
               
             ]),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -71,7 +71,7 @@ class _HomeState extends State<Home> {
           padding: EdgeInsets.all(10),
           sliver: SliverGrid(
             delegate: SliverChildListDelegate([
-              _buildImageButton('assets/image6.png'),
+              _buildImageButton(''),
             ]),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 1, // В этой строке 1 кнопка
@@ -85,9 +85,9 @@ class _HomeState extends State<Home> {
           padding: EdgeInsets.all(10),
           sliver: SliverGrid(
             delegate: SliverChildListDelegate([
-              _buildImageButton('assets/image7.png'),
-              _buildImageButton('assets/image8.png'),
-              _buildImageButton('assets/image9.png'),
+              _buildImageButton(''),
+              _buildImageButton(''),
+              _buildImageButton(''),
             ]),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 3, // В этой строке 3 кнопки

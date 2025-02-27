@@ -1,23 +1,21 @@
 import 'package:comicsstudio/core/router/app_router.dart';
+import 'package:comicsstudio/features/draw/providers/addPage.dart';
+import 'package:comicsstudio/features/draw/providers/saveComic.dart';
 import 'package:flutter/material.dart';
-// import 'dart:ui' as ui;
-
+import 'dart:ui' as ui;
 import 'package:provider/provider.dart';
-
-import '../../providers/function.dart';
+import '../../providers/addPage.dart';
 
 class DrawPage extends StatelessWidget {
 const DrawPage({ super.key });
 
-  get addPage => null;
-  
-  get saveComic => null;
-
   @override
   Widget build(BuildContext context){
 
-  Provider.of<FunctionDraw>(context);
+  final add = Provider.of<addPage>(context);
 
+  final save = Provider.of<Savecomic>(context);
+  
     return Scaffold(
       appBar: AppBar(
         leading: IconButton
@@ -30,11 +28,11 @@ const DrawPage({ super.key });
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
-            onPressed: addPage,
+            onPressed: add.addpage,
           ),
           IconButton(
             icon: const Icon(Icons.save),
-            onPressed: saveComic,
+            onPressed: save.saveComic,
           ),
         ],
       ),

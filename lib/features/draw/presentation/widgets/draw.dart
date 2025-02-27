@@ -1,96 +1,78 @@
-import 'package:comicsstudio/features/draw/providers/function.dart';
+import 'package:comicsstudio/features/draw/providers/grid.dart';
+import 'package:comicsstudio/features/draw/providers/undo_redo.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
-
 import 'package:provider/provider.dart';
 
+import '../../providers/tools.dart';
+import '../../providers/addPage.dart';
+
 class Draw extends StatefulWidget {
+  const Draw({ super.key });
+
   @override
-  State<Draw> createState() => _DrawState();
+  _DrawState createState() => _DrawState();
 }
 
 class _DrawState extends State<Draw> {
-  get functionDraw => functionDraw;
-  
-  get paths => null;
-  
-  get currentTool => null;
-  
-  get undonePaths => null;
-  
-  get strokeWidth => null;
-  
-  get currentColor => null;
-
-  // List<ui.Path> _paths = [];
-  // List<ui.Path> _undonePaths = [];
-  // Color _currentColor = Colors.black;
-  // double _strokeWidth = 5.0;
-  // DrawingTool _currentTool = DrawingTool.pen;
-  
-  // // Контролируемая сетка
-  // bool _isGridEnabled = false;
-  // int _gridSize = 4; // 4x4 сетка по умолчанию
-  
-  // // Добавление шаблонов
-  // final List<Widget> _comicCells = [];
-
   @override
   Widget build(BuildContext context) {
+  final comicCells = Provider.of<addPage>(context).comicCells;
 
-    Provider.of<FunctionDraw>(context);
-
-    return Column(
-      children: [
-        _buildToolBar(),
-        Expanded(
-          child: Stack(
-            children: [
-              // _buildGrid(),
-              _buildCanvas(),
-              // ...comicCells,
-            ],
-          ),
+  return Column(
+    children: [
+      _buildToolBar(context),
+      Expanded(
+        child: Stack(
+          children: [
+            _buildCanvas(context),
+            ...comicCells,
+          ],
         ),
-      ]
-    );
-  }
+      ),
+    ],
+  );
+}
 
   // Панель инструментов
-  Widget _buildToolBar() {
+  Widget _buildToolBar(BuildContext context) {
+    final tools = Provider.of<Tools>(context, listen: false);
+    final undoRedo = Provider.of<UndoRedo>(context, listen: false);
+    final grid = Provider.of<Grid>(context, listen: false);
+
     return Container(
       color: Colors.grey[200],
-      padding: EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           IconButton(
-            icon: Icon(Icons.brush),
-            onPressed: () => functionDraw.setTool(DrawingTool.pen),
+            icon: const Icon(Icons.brush),
+            onPressed: () => tools.setTool(DrawingTool.pen),
           ),
           IconButton(
-            icon: Icon(Icons.create),
-            onPressed: () => functionDraw.setTool(DrawingTool.pencil),
+            icon: const Icon(Icons.create),
+            onPressed: () => tools.setTool(DrawingTool.pencil),
           ),
           IconButton(
-            icon: Icon(Icons.call),
-            onPressed: () => functionDraw.setToo(DrawingTool.fill),
+            icon: const Icon(Icons.format_paint),
+            onPressed: () => tools.setTool(DrawingTool.fill),
           ),
           IconButton(
-            icon: Icon(Icons.delete),
-            onPressed: () => functionDraw.setToo(DrawingTool.clear),
+            icon: const Icon(Icons.delete),
+            onPressed: () => tools.setTool(DrawingTool.clear),
           ),
           IconButton(
-            icon: Icon(Icons.undo),
-            onPressed: functionDraw.undo,
+            icon: const Icon(Icons.undo),
+            onPressed: undoRedo.undo,
           ),
           IconButton(
-            icon: Icon(Icons.redo),
-            onPressed: functionDraw.redo,
+            icon: const Icon(Icons.redo),
+            onPressed: undoRedo.redo,
           ),
           IconButton(
-            icon: Icon(Icons.grid_on),
-            onPressed: functionDraw.toggleGrid,
+            icon: const Icon(Icons.grid_on),
+            onPressed: grid.toggleGrid,
           ),
         ],
       ),
@@ -98,22 +80,30 @@ class _DrawState extends State<Draw> {
   }
 
   // Область рисования
-  Widget _buildCanvas() {
+  Widget _buildCanvas(BuildContext context) {
+    final undoRedo = Provider.of<UndoRedo>(context);
+    final tools = Provider.of<Tools>(context);
+
+    final strokeWidth = tools.strokeWidth;
+    final currentColor = tools.currentColor;
+
     return GestureDetector(
+      onPanStart: (details) {
+        undoRedo.startNewPath(details.localPosition);
+      },
       onPanUpdate: (details) {
-        setState(() {
-          if (currentTool == DrawingTool.pen || currentTool == DrawingTool.pencil) {
-            paths.add(_drawPath(details.localPosition));
-          }
-        });
+        if (tools.currentTool == DrawingTool.pen ||
+            tools.currentTool == DrawingTool.pencil) {
+          undoRedo.updateCurrentPath(details.localPosition);
+        }
       },
       onPanEnd: (details) {
-        undonePaths.clear();
+        undoRedo.finishCurrentPath();
       },
       child: CustomPaint(
-        size: Size(double.infinity, double.infinity),
+        size: const Size(double.infinity, double.infinity),
         painter: ComicPainter(
-          paths: paths,
+          paths: undoRedo.paths, // Здесь уже корректный тип List<ui.Path>
           strokeWidth: strokeWidth,
           color: currentColor,
         ),
@@ -121,47 +111,103 @@ class _DrawState extends State<Draw> {
     );
   }
 
-  // Рисование пути
-  ui.Path _drawPath(Offset position) {
-    ui.Path path = ui.Path();
-    path.moveTo(position.dx, position.dy);
-    path.lineTo(position.dx + 1, position.dy + 1);
-    return path;
-  }
+  
 
-  // Сетка
-  // Widget _buildGrid() {
-  //   if (!isGridEnabled) return SizedBox.shrink();
+  // @override
+  // Widget build(BuildContext context) {
+  //   final comicCells = Provider.of<addPage>(context).comicCells;
 
-  //   double gridWidth = MediaQuery.of(context).size.width;
-  //   double gridHeight = MediaQuery.of(context).size.height;
-
-  //   List<Widget> gridLines = [];
-
-  //   for (int i = 0; i < _gridSize; i++) {
-  //     gridLines.add(Positioned(
-  //       left: gridWidth / _gridSize * i,
-  //       top: 0,
-  //       child: Container(
-  //         width: 1,
-  //         height: gridHeight,
-  //         color: Colors.grey.withOpacity(0.5),
+  //   return Column(
+  //     children: [
+  //       _buildToolBar(context),
+  //       Expanded(
+  //         child: Stack(
+  //           children: [
+  //             _buildCanvas(context),
+  //             ...comicCells,
+  //           ],
+  //         ),
   //       ),
-  //     ));
-  //     gridLines.add(Positioned(
-  //       top: gridHeight / _gridSize * i,
-  //       left: 0,
-  //       child: Container(
-  //         width: gridWidth,
-  //         height: 1,
-  //         color: Colors.grey.withOpacity(0.5),
-  //       ),
-  //     ));
-  //   }
-  //   return Stack(children: gridLines);
+  //     ],
+  //   );
   // }
 
+  // // Панель инструментов
+  // Widget _buildToolBar(BuildContext context) {
+  //   final tools = Provider.of<Tools>(context, listen: false);
+  //   final undoRedo = Provider.of<UndoRedo>(context, listen: false);
+  //   final grid = Provider.of<Grid>(context, listen: false);
 
+  //   return Container(
+  //     color: Colors.grey[200],
+  //     padding: const EdgeInsets.symmetric(vertical: 10),
+  //     child: Row(
+  //       mainAxisAlignment: MainAxisAlignment.spaceAround,
+  //       children: [
+  //         IconButton(
+  //           icon: const Icon(Icons.brush),
+  //           onPressed: () => tools.setTool(DrawingTool.pen),
+  //         ),
+  //         IconButton(
+  //           icon: const Icon(Icons.create),
+  //           onPressed: () => tools.setTool(DrawingTool.pencil),
+  //         ),
+  //         IconButton(
+  //           icon: const Icon(Icons.format_paint),
+  //           onPressed: () => tools.setTool(DrawingTool.fill),
+  //         ),
+  //         IconButton(
+  //           icon: const Icon(Icons.delete),
+  //           onPressed: () => tools.setTool(DrawingTool.clear),
+  //         ),
+  //         IconButton(
+  //           icon: const Icon(Icons.undo),
+  //           onPressed: undoRedo.undo,
+  //         ),
+  //         IconButton(
+  //           icon: const Icon(Icons.redo),
+  //           onPressed: undoRedo.redo,
+  //         ),
+  //         IconButton(
+  //           icon: const Icon(Icons.grid_on),
+  //           onPressed: grid.toggleGrid,
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
+
+  // // Область рисования
+  // Widget _buildCanvas(BuildContext context) {
+  //   final undoRedo = Provider.of<UndoRedo>(context);
+  //   final tools = Provider.of<Tools>(context);
+
+  //   final strokeWidth = tools.strokeWidth;
+  //   final currentColor = tools.currentColor;
+
+  //   return GestureDetector(
+  //     onPanStart: (details) {
+  //       undoRedo.startNewPath(details.localPosition);
+  //     },
+  //     onPanUpdate: (details) {
+  //       if (tools.currentTool == DrawingTool.pen ||
+  //           tools.currentTool == DrawingTool.pencil) {
+  //         undoRedo.updateCurrentPath(details.localPosition);
+  //       }
+  //     },
+  //     onPanEnd: (details) {
+  //       undoRedo.finishCurrentPath();
+  //     },
+  //     child: CustomPaint(
+  //       size: const Size(double.infinity, double.infinity),
+  //       painter: ComicPainter(
+  //         paths: undoRedo.paths, // Здесь уже корректный тип List<ui.Path>
+  //         strokeWidth: strokeWidth,
+  //         color: currentColor,
+  //       ),
+  //     ),
+  //   );
+  // }
 }
 
 class ComicPainter extends CustomPainter {
