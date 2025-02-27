@@ -1,16 +1,71 @@
-# comicsstudio
+# Название проекта
 
-A new Flutter project.
+Краткое описание проекта.
 
-## Getting Started
+## Требования
 
-This project is a starting point for a Flutter application.
+- [Flutter](https://flutter.dev/docs/get-started/install) 2.x и выше
+- [Dart](https://dart.dev/get-dart) 2.x и выше
+- IDE (например, [Visual Studio Code](https://code.visualstudio.com/) или [Android Studio](https://developer.android.com/studio))
 
-A few resources to get you started if this is your first Flutter project:
+## Установка
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### 1. Клонируйте репозиторий
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Для начала, клонируйте репозиторий на ваш локальный компьютер:
+
+```bash
+git clone https://github.com/Ilnar-912/comicsstudio.git cd
+```
+
+### 2. Установите зависимости
+
+Убедитесь, что у вас установлен Flutter. Если нет, следуйте инструкциям по установке на [официальном сайте](https://flutter.dev/docs/get-started/install).
+
+После клонирования репозитория, откройте терминал в корневой папке проекта и выполните команду:
+
+```bash
+flutter pub get
+```
+
+Это установит все необходимые зависимости проекта.
+
+## Запуск проекта
+
+### 1. Запуск на эмуляторе/физическом устройстве
+
+Убедитесь, что у вас настроено устройство для разработки. Вы можете проверить это с помощью команды:
+
+```bash
+flutter devices
+```
+
+Затем выполните команду для запуска проекта:
+
+```bash
+flutter run
+```
+
+Проект будет собран и запущен на выбранном устройстве.
+
+### 2. Запуск на Android
+
+Для сборки проекта для Android используйте:
+
+```bash
+flutter build apk
+```
+
+## Дополнительные команды
+
+- Проверка состояния проекта:
+
+```bash
+flutter doctor
+```
+
+- Создание сборки для релиза:
+
+```bash
+flutter build apk --release
+```
