@@ -1,0 +1,2 @@
+D:/Projects/comicsstudio/android/app/.cxx/RelWithDebInfo/5x1e691s/armeabi-v7a/CMakeFiles/edit_cache.dir
+D:/Projects/comicsstudio/android/app/.cxx/RelWithDebInfo/5x1e691s/armeabi-v7a/CMakeFiles/rebuild_cache.dir
